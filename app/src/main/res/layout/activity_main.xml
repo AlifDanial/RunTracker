@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <ImageButton
+        android:id="@+id/workoutHistoryBtn"
+        style="@android:style/Widget.DeviceDefault.ImageButton"
+        android:layout_width="315dp"
+        android:layout_height="160dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="108dp"
+        android:background="@drawable/walker"
+        android:onClick="onRunHistoryButtonClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/weeklyBtn"
+        style="@android:style/Widget.DeviceDefault.ImageButton"
+        android:layout_width="151dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="328dp"
+        android:background="@drawable/trees"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/monthlyBtn"
+        style="@android:style/Widget.DeviceDefault.ImageButton"
+        android:layout_width="150dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="36dp"
+        android:background="@drawable/darktree"
+        android:contentDescription="TODO"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/workoutHistoryBtn" />
+
+    <Button
+        android:id="@+id/runButton"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="331dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/button_rounded"
+        android:fontFamily="@font/poppins_bold"
+        android:onClick="onRunButtonClicked"
+        android:text="@string/start_workout"
+        android:textColor="#FFFFFFFF"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="36dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/runtracker"
+        android:textAlignment="center"
+        android:textColor="#2E2C2C"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_bold"
+        android:strokeColor="#000000"
+        android:text="@string/workout_history"
+        android:textColor="#FCFBF9"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/workoutHistoryBtn"
+        app:layout_constraintTop_toTopOf="@+id/workoutHistoryBtn" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_bold"
+        android:strokeColor="#000000"
+        android:text="@string/weekly"
+        android:textColor="#FCFBF9"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/weeklyBtn"
+        app:layout_constraintTop_toTopOf="@+id/weeklyBtn" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="72dp"
+        android:fontFamily="@font/poppins_bold"
+        android:strokeColor="#000000"
+        android:text="@string/monthly"
+        android:textColor="#FCFBF9"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/monthlyBtn"
+        app:layout_constraintTop_toTopOf="@+id/monthlyBtn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
