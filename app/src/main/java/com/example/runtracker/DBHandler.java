@@ -11,7 +11,7 @@ import com.example.runtracker.provider.MyContentProvider;
 public class DBHandler extends SQLiteOpenHelper {
 
     private ContentResolver CR;
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "mapsDB.db";
     public static final String TABLE_RUN ="run";
     public static final String COLUMN_ID = "id";
@@ -19,6 +19,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_DISTANCE = "distance";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_ELEVATION = "elevation";
+    public static final String COLUMN_MAP = "map";
 
     public DBHandler(Context context, String name,
                      SQLiteDatabase.CursorFactory factory, int version) {
@@ -33,13 +34,15 @@ public class DBHandler extends SQLiteOpenHelper {
                         "%s TEXT," +
                         "%s TEXT," +
                         "%s TEXT," +
-                        "%s TEXT)",
+                        "%s TEXT," +
+                        "%s VARBINARY)",
                 TABLE_RUN,
                 COLUMN_ID,
                 COLUMN_DURATION,
                 COLUMN_DISTANCE,
                 COLUMN_DATE,
-                COLUMN_ELEVATION
+                COLUMN_ELEVATION,
+                COLUMN_MAP
         );
         db.execSQL(CREATE_RUN_TABLE);
     }
@@ -57,6 +60,7 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_DISTANCE, run.getRunDistance());
         values.put(COLUMN_DATE, run.getRunDate());
         values.put(COLUMN_ELEVATION, run.getRunElevation());
+        values.put(COLUMN_MAP, run.getRunMap());
         CR.insert(MyContentProvider.CONTENT_URI, values);
     }
 

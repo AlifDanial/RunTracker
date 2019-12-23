@@ -57,7 +57,8 @@ public class RunHistoryActivity extends AppCompatActivity {
                 AppContract.COLUMN_DURATION,
                 AppContract.COLUMN_DISTANCE,
                 AppContract.COLUMN_DATE,
-                AppContract.COLUMN_ELEVATION
+                AppContract.COLUMN_ELEVATION,
+                AppContract.COLUMN_MAP
 
         };
 
@@ -73,7 +74,8 @@ public class RunHistoryActivity extends AppCompatActivity {
                     cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DURATION)),
                     cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DISTANCE)),
                     cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DATE)),
-                    cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ELEVATION))
+                    cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ELEVATION)),
+                    cursor.getBlob(cursor.getColumnIndex(AppContract.COLUMN_MAP))
             );
             data.add(run);
         }

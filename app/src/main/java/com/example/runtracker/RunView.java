@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.jar.Attributes;
@@ -20,6 +23,7 @@ public class RunView extends AppCompatActivity {
     private static String DURATION;
     private static String ELEVATION;
     private static String PACE;
+    private static byte[] MAP;
     private static float pace;
     DBHandler dbHandler;
     TextView dateText;
@@ -28,6 +32,7 @@ public class RunView extends AppCompatActivity {
     TextView elevationText;
     TextView paceText;
     TextView nameText;
+    ImageView map;
 
     Button deleteBtn;
 
@@ -47,6 +52,7 @@ public class RunView extends AppCompatActivity {
         paceText = findViewById(R.id.paceText);
         nameText = findViewById(R.id.activityName);
         deleteBtn = findViewById(R.id.deletebtn);
+        map = findViewById(R.id.mapView);
 
         // get recipe details from intent extras
         Intent intent = getIntent();
@@ -56,6 +62,8 @@ public class RunView extends AppCompatActivity {
         DISTANCE = intent.getStringExtra("distance");
         DURATION = intent.getStringExtra("duration");
         ELEVATION = intent.getStringExtra("elevation");
+        MAP = intent.getByteArrayExtra("map");
+
         ELEVATION = ELEVATION + "m";
 
         String t=DURATION;
@@ -80,6 +88,9 @@ public class RunView extends AppCompatActivity {
             NAME = "Running Activity";
         }
 
+        Bitmap bitmap = BitmapFactory.decodeByteArray(MAP,0,MAP.length);
+
+        map.setImageBitmap(bitmap);
         dateText.setText(DATE);
         distanceText.setText(DISTANCE);
         timeText.setText(DURATION);

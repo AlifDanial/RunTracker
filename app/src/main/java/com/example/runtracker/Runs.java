@@ -7,16 +7,18 @@ public class Runs {
     private String runDistance;
     private String runDate;
     private String runElevation;
+    private byte[] runMap;
 
     public Runs(){};
 
     //recipe constructor
-    public Runs(int id, String runDuration, String runDistance, String runDate, String runElevation){
+    public Runs(int id, String runDuration, String runDistance, String runDate, String runElevation, byte[] runMap){
         this.runID = id;
         this.runDuration = runDuration;
         this.runDistance = runDistance;
         this.runDate = runDate;
         this.runElevation = runElevation;
+        this.runMap = runMap;
 
     }
 
@@ -50,6 +52,14 @@ public class Runs {
 
     public void setRunDate(String runDate) {
         this.runDate = runDate;
+    }
+
+    public byte[] getRunMap() {
+        return runMap;
+    }
+
+    public void setRunMap(byte[] runMap) {
+        this.runMap = runMap;
     }
 
     public String getRunElevation() {

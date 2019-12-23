@@ -5,17 +5,21 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.text.format.DateFormat;
+import android.widget.Toast;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,6 +30,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -68,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Polyline gpsTrack;
     private int seconds = 0;
     private boolean startRun;
+    private byte[] img;
 
 
     @Override
@@ -216,7 +225,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         date = new SimpleDateFormat("dd.MM.yyyy");
         String Date = date.format(new Date());
         stopTime = cal.getTimeInMillis();
-        Runs run = new Runs(0, timeText.getText().toString(), distanceText.getText().toString() + "KM", Date, String.format("%.02f", altitude));
+        captureScreen();
+        Runs run = new Runs(0, timeText.getText().toString(), distanceText.getText().toString() + "KM", Date, String.format("%.02f", altitude), img);
         dbHandler.addRun(run);
         startActivity(new Intent(this, MainActivity.class));
     }
@@ -350,6 +360,73 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
     }//end updateLocation
 
+//    public void captureScreen()
+//    {
+//        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback()
+//        {
+//
+//            @Override
+//            public void onSnapshotReady(Bitmap snapshot)
+//            {
+//                    int newHeight = 200;
+//                    int newWidth = 300;
+//
+//                    int width = snapshot.getWidth();
+//
+//                    int height = snapshot.getHeight();
+//
+//                    float scaleWidth = ((float) newWidth) / width;
+//
+//                    float scaleHeight = ((float) newHeight) / height;
+//
+//                    // create a matrix for the manipulation
+//
+//                    Matrix matrix = new Matrix();
+//
+//                    // resize the bit map
+//
+//                    matrix.postScale(scaleWidth, scaleHeight);
+//
+//                    // recreate the new Bitmap
+//
+//                    Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 0, width, height,
+//                            matrix, false);
+//
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+//                img = bos.toByteArray();
+//
+//
+//            }
+//        };
+//
+//        mMap.snapshot(callback);
+//    }
+
+    private void captureScreen() {
+
+            GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+                Bitmap bitmap=null;
+
+                @Override
+                public void onSnapshotReady(Bitmap snapshot) {
+                    // TODO Auto-generated method stub
+                    bitmap = snapshot;
+                    try {
+                        Bitmap resizedBitmap = Bitmap.createBitmap(snapshot,0,0,300,200);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                        img = bos.toByteArray();
+                        Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            };
+
+            mMap.snapshot(callback);
+        }
 
 
 
