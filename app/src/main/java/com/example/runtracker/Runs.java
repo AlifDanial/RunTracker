@@ -6,19 +6,17 @@ public class Runs {
     private String runDuration;
     private String runDistance;
     private String runDate;
-    private String runStartTime;
-    private String runStopTime;
+    private String runElevation;
 
     public Runs(){};
 
     //recipe constructor
-    public Runs(int id, String runDuration, String runDistance, String runDate, String runStartTime, String runStopTime){
+    public Runs(int id, String runDuration, String runDistance, String runDate, String runElevation){
         this.runID = id;
         this.runDuration = runDuration;
         this.runDistance = runDistance;
         this.runDate = runDate;
-        this.runStartTime = runStartTime;
-        this.runStopTime = runStopTime;
+        this.runElevation = runElevation;
 
     }
 
@@ -38,14 +36,6 @@ public class Runs {
         return runDate;
     }
 
-    public String getRunStartTime() {
-        return runStartTime;
-    }
-
-    public String getRunStopTime() {
-        return runStopTime;
-    }
-
     public void setRunID(int runID) {
         this.runID = runID;
     }
@@ -62,11 +52,11 @@ public class Runs {
         this.runDate = runDate;
     }
 
-    public void setRunStartTime(String runStartTime) {
-        this.runStartTime = runStartTime;
+    public String getRunElevation() {
+        return runElevation;
     }
 
-    public void setRunStopTime(String runStopTime) {
-        this.runStopTime = runStopTime;
+    public void setRunElevation(String runElevation) {
+        this.runElevation = runElevation;
     }
 }

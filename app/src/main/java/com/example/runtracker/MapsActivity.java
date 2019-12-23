@@ -57,9 +57,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double StartLong;
     private double Lat;
     private double Long;
+    private double Alt;
+    private double StartAlt;
+    private double LastAlt;
     private double LastLat;
     private double LastLong;
     private float distance;
+    private double altitude;
     private LatLng LastLatLng;
     private Polyline gpsTrack;
     private int seconds = 0;
@@ -126,6 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onLocationChanged(Location location) {
                         Lat = location.getLatitude();
                         Long = location.getLongitude();
+
                         LastLatLng = new LatLng(Lat,Long);
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, 18.2f));
                         newLocation = new Location("newLocation");
@@ -133,6 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         newLocation.setLongitude(Long);
                         updateTrack();
                         Log.d("runTracker newLocation", location.getLatitude() + " " + location.getLongitude());
+                        Log.d("runTracker newaltitude", location.getAltitude() + "");
                         Log.d("runTracker - newdistance", distance + "");
                     }
 
@@ -163,6 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onLocationChanged(Location location) {
                         Lat = location.getLatitude();
                         Long = location.getLongitude();
+                        Alt = location.getAltitude();
                         LastLatLng = new LatLng(Lat,Long);
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, 18.2f));
                         newLocation = new Location("newLocation");
@@ -170,6 +177,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         newLocation.setLongitude(Long);
                         updateTrack();
                         Log.d("runTracker newLocation", location.getLatitude() + " " + location.getLongitude());
+                        Log.d("runTracker newaltitude", location.getAltitude() + "");
                         Log.d("runTracker - newdistance", distance + "");
                     }
 
@@ -208,7 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         date = new SimpleDateFormat("dd.MM.yyyy");
         String Date = date.format(new Date());
         stopTime = cal.getTimeInMillis();
-        Runs run = new Runs(0, timeText.getText().toString(), distanceText.getText().toString() + "KM", Date, String.valueOf(startTime), String.valueOf(stopTime));
+        Runs run = new Runs(0, timeText.getText().toString(), distanceText.getText().toString() + "KM", Date, String.format("%.02f", altitude));
         dbHandler.addRun(run);
         startActivity(new Intent(this, MainActivity.class));
     }
@@ -221,7 +229,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         oldLocation.setLatitude(LastLat);
         oldLocation.setLongitude(LastLong);
         distance += oldLocation.distanceTo(newLocation)/1000;
+        altitude = (Alt + LastAlt);
         Log.d("runTracker - oldLocation", oldLocation.getLatitude() + "" + oldLocation.getLongitude());
+        Log.d("runTracker oldaltitude", LastAlt + "");
+        LastAlt = Alt;
         LastLat = Lat;
         LastLong = Long;
         updateDistance();
@@ -272,9 +283,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onLocationChanged(Location location) {
                             StartLat = location.getLatitude();
                             StartLong = location.getLongitude();
+                            StartAlt = location.getAltitude();
                             LatLng latLng = new LatLng(StartLat, StartLong);
                                 LastLat = StartLat;
                                 LastLong = StartLong;
+                                LastAlt = StartAlt;
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.2f));
                             runButton.setClickable(true);
                         }
@@ -307,9 +320,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onLocationChanged(Location location) {
                             StartLat = location.getLatitude();
                             StartLong = location.getLongitude();
+                            StartAlt = location.getAltitude();
                             LatLng latLng = new LatLng(StartLat, StartLong);
                                 LastLat = StartLat;
                                 LastLong = StartLong;
+                                LastAlt = StartAlt;
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.2f));
                             runButton.setClickable(true);
                         }

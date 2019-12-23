@@ -39,18 +39,18 @@ public class MyContentProvider extends ContentProvider {
         int rowsDeleted = 0;
         switch (uriType) {
             case RUNS:
-                rowsDeleted = sqlDB.delete(DBHandler.TABLE_RUNS,
+                rowsDeleted = sqlDB.delete(DBHandler.TABLE_RUN,
                         selection,
                         selectionArgs);
                 break;
             case RUNS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(DBHandler.TABLE_RUNS,
+                    rowsDeleted = sqlDB.delete(DBHandler.TABLE_RUN,
                             DBHandler.COLUMN_ID + "=" + id,
                             null);
                 } else {
-                    rowsDeleted = sqlDB.delete(DBHandler.TABLE_RUNS,
+                    rowsDeleted = sqlDB.delete(DBHandler.TABLE_RUN,
                             DBHandler.COLUMN_ID + "=" + id
                                     + " and " + selection,
                             selectionArgs);
@@ -79,7 +79,7 @@ public class MyContentProvider extends ContentProvider {
         long id = 0;
         switch (uriType) {
             case RUNS:
-                id = sqlDB.insert(DBHandler.TABLE_RUNS,
+                id = sqlDB.insert(DBHandler.TABLE_RUN,
                         null, values);
                 break;
             default:
@@ -100,7 +100,7 @@ public class MyContentProvider extends ContentProvider {
     @Override   //method to identify the data to be retrieved, and extracted in a cursor object
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(DBHandler.TABLE_RUNS);
+        queryBuilder.setTables(DBHandler.TABLE_RUN);
         int uriType = sURIMatcher.match(uri);
         switch (uriType) {
             case RUNS_ID:
@@ -128,16 +128,16 @@ public class MyContentProvider extends ContentProvider {
         int rowsUpdated = 0;
         switch (uriType) {
             case RUNS:
-                rowsUpdated = sqlDB.update(DBHandler.TABLE_RUNS, values,
+                rowsUpdated = sqlDB.update(DBHandler.TABLE_RUN, values,
                         selection, selectionArgs);
                 break;
             case RUNS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsUpdated = sqlDB.update(DBHandler.TABLE_RUNS, values,
+                    rowsUpdated = sqlDB.update(DBHandler.TABLE_RUN, values,
                             DBHandler.COLUMN_ID + "=" + id, null);
                 } else {
-                    rowsUpdated = sqlDB.update(DBHandler.TABLE_RUNS, values,
+                    rowsUpdated = sqlDB.update(DBHandler.TABLE_RUN, values,
                             DBHandler.COLUMN_ID + "=" + id
                                     + " and " + selection, selectionArgs);
                 }
