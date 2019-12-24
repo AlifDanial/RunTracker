@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.jar.Attributes;
 
 public class RunView extends AppCompatActivity {
 
@@ -80,8 +79,13 @@ public class RunView extends AppCompatActivity {
         String distance = DISTANCE.substring(0, DISTANCE.length() - 2);
         pace = time / Float.parseFloat(distance);
 
+        if(time != 0 && Float.parseFloat(distance) != 0){
         PACE = String.format("%.02f",pace);
         PACE = PACE + "'";
+        }else {
+        PACE = "0.00";
+        PACE = PACE + "'";
+        }
 
         if(pace > 13){
             NAME = "Walking Activity";

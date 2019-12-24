@@ -3,10 +3,11 @@ package com.example.runtracker;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -20,6 +21,7 @@ public class RunHistoryActivity extends AppCompatActivity {
 
     private static List<Runs> data;
     private static CustomAdapter adapter;
+    private int i = 0;
     DBHandler dbHandler;
     ListView runsList;
 
@@ -27,8 +29,8 @@ public class RunHistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run_history);
-
         getSupportActionBar().hide();
+
         dbHandler = new DBHandler(this,null,null, AppContract.DATABASE_VERSION);
         runsList = findViewById(R.id.runsList);
 
@@ -64,27 +66,51 @@ public class RunHistoryActivity extends AppCompatActivity {
 
         };
 
-
         Cursor cursor = getContentResolver().query(MyContentProvider.CONTENT_URI, ArrayProjection,
                 null, null, null);
 
         data = new ArrayList<Runs>();
 
-        while (cursor.moveToNext()) {
-            Runs run = new Runs(
-                    Integer.parseInt(cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ID))),
-                    cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DURATION)),
-                    cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DISTANCE)),
-                    cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DATE)),
-                    cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ELEVATION)),
-                    cursor.getBlob(cursor.getColumnIndex(AppContract.COLUMN_MAP))
-            );
-            data.add(run);
+
+            while (cursor.moveToNext()) {
+                Runs run = new Runs(
+                        Integer.parseInt(cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ID))),
+                        cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DURATION)),
+                        cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DISTANCE)),
+                        cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DATE)),
+                        cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ELEVATION)),
+                        cursor.getBlob(cursor.getColumnIndex(AppContract.COLUMN_MAP))
+                );
+                data.add(run);
+                i++;
+            }
+
+        if(i == 0){
+            new AlertDialog.Builder(RunHistoryActivity.this)
+                    .setTitle("No workouts saved yet")
+                    .setMessage("Would you like to go for a run?")
+
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            LaunchMapsActivity();
+                        }
+                    })
+
+                    // A null listener allows the button to dismiss the dialog and take no further action.
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            LaunchMainActivity();
+                        }
+                    })
+                    .show();
         }
 
         adapter = new CustomAdapter(this, data);
         runsList.setAdapter(adapter);
+
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -95,5 +121,12 @@ public class RunHistoryActivity extends AppCompatActivity {
         }
     }
 
+    public void LaunchMapsActivity(){
+        startActivity(new Intent(this, MapsActivity.class));
+    }
+
+    public void LaunchMainActivity(){
+        startActivity(new Intent(this, MainActivity.class));
+    }
 
 }
