@@ -2,24 +2,19 @@ package com.example.runtracker;
 
 import androidx.fragment.app.FragmentActivity;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,9 +26,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -76,7 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Polyline gpsTrack;
     private int seconds = 0;
     private boolean startRun;
-    private byte[] img;
+    public static byte[] img;
+    public float zoom;
 
 
     @Override
@@ -95,7 +88,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         runButton.setClickable(false);
         stopBtn = findViewById(R.id.stopBtn);
         stopBtn.setVisibility(View.GONE);
-
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         Timer();
@@ -129,7 +121,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             stopBtn.setVisibility(View.GONE);
             startRun = true;
             startTime = cal.getTimeInMillis();
-
 
 
             //checks if network provider is enabled
@@ -218,16 +209,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startRun = false;
 
         }
-    }
+    }//end onStartButtonClicked()
 
     public void onStopButtonClicked(View v){
         locationManager.removeUpdates(activelocationListener);
-        date = new SimpleDateFormat("dd.MM.yyyy");
-        String Date = date.format(new Date());
-        stopTime = cal.getTimeInMillis();
-        captureScreen();
-        Runs run = new Runs(0, timeText.getText().toString(), distanceText.getText().toString() + "KM", Date, String.format("%.02f", altitude), img);
-        dbHandler.addRun(run);
+        updateDatabase();
         startActivity(new Intent(this, MainActivity.class));
     }
 
@@ -256,9 +242,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void pauseTracking(){
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, getZoom()));
         locationManager.removeUpdates(activelocationListener);
         updateLocation();
 
+    }
+
+    public float getZoom(){
+        if(distance < 1.0){
+            zoom = 18.2f;
+            return zoom;
+        }
+        else if(distance < 2.0){
+            zoom = 15.2f;
+            return zoom;
+        }
+        else if(distance < 4.0) {
+            zoom = 14.2f;
+            return zoom;
+        }
+        else if(distance < 5.0){
+            zoom = 13.2f;
+            return zoom;
+        }
+        else if(distance > 10.0){
+            zoom = 12.2f;
+            return zoom;
+        }
+        else
+            return zoom;
     }
 
     private void Timer(){
@@ -285,42 +297,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void updateLocation(){
-            //checks if network provider is enabled
-            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                try {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, inactivelocationListener = new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            StartLat = location.getLatitude();
-                            StartLong = location.getLongitude();
-                            StartAlt = location.getAltitude();
-                            LatLng latLng = new LatLng(StartLat, StartLong);
-                                LastLat = StartLat;
-                                LastLong = StartLong;
-                                LastAlt = StartAlt;
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.2f));
-                            runButton.setClickable(true);
-                        }
+        //checks if network provider is enabled
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            try {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, inactivelocationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        StartLat = location.getLatitude();
+                        StartLong = location.getLongitude();
+                        StartAlt = location.getAltitude();
+                        LatLng latLng = new LatLng(StartLat, StartLong);
+                            LastLat = StartLat;
+                            LastLong = StartLong;
+                            LastAlt = StartAlt;
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getZoom()));
+                        runButton.setClickable(true);
+                    }
 
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {
-                            Log.d("runTracker", "onStatusChanged: " + provider + " " + status);
-                        }
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+                        Log.d("runTracker", "onStatusChanged: " + provider + " " + status);
+                    }
 
-                        @Override
-                        public void onProviderEnabled(String provider) {
-                            Log.d("runTracker", "onProviderEnabled: " + provider);
-                        }
+                    @Override
+                    public void onProviderEnabled(String provider) {
+                        Log.d("runTracker", "onProviderEnabled: " + provider);
+                    }
 
-                        @Override
-                        public void onProviderDisabled(String provider) {
-                            Log.d("runTracker", "onProviderDisabled: " + provider);
-                        }
-                    });
-                } catch (SecurityException e) {
-                    Log.d("runTracker", e.toString());
-                }
+                    @Override
+                    public void onProviderDisabled(String provider) {
+                        Log.d("runTracker", "onProviderDisabled: " + provider);
+                    }
+                });
+            } catch (SecurityException e) {
+                Log.d("runTracker", e.toString());
             }
+        }
 
             //checks if gps provider is enabled
             else if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
@@ -335,7 +347,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 LastLat = StartLat;
                                 LastLong = StartLong;
                                 LastAlt = StartAlt;
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15.2f));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getZoom()));
+                            Log.d("zoom value", zoom + "");
                             runButton.setClickable(true);
                         }
 
@@ -360,73 +373,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
     }//end updateLocation
 
-//    public void captureScreen()
-//    {
-//        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback()
-//        {
-//
-//            @Override
-//            public void onSnapshotReady(Bitmap snapshot)
-//            {
-//                    int newHeight = 200;
-//                    int newWidth = 300;
-//
-//                    int width = snapshot.getWidth();
-//
-//                    int height = snapshot.getHeight();
-//
-//                    float scaleWidth = ((float) newWidth) / width;
-//
-//                    float scaleHeight = ((float) newHeight) / height;
-//
-//                    // create a matrix for the manipulation
-//
-//                    Matrix matrix = new Matrix();
-//
-//                    // resize the bit map
-//
-//                    matrix.postScale(scaleWidth, scaleHeight);
-//
-//                    // recreate the new Bitmap
-//
-//                    Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 0, width, height,
-//                            matrix, false);
-//
-//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-//                img = bos.toByteArray();
-//
-//
-//            }
-//        };
-//
-//        mMap.snapshot(callback);
-//    }
 
-    private void captureScreen() {
+    private void updateDatabase() {
 
-            GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
-                Bitmap bitmap=null;
+        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+            Bitmap bitmap=null;
 
-                @Override
-                public void onSnapshotReady(Bitmap snapshot) {
-                    // TODO Auto-generated method stub
-                    bitmap = snapshot;
-                    try {
-                        Bitmap resizedBitmap = Bitmap.createBitmap(snapshot,0,0,300,200);
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                        img = bos.toByteArray();
-                        Toast.makeText(getApplicationContext(), "Image Saved", Toast.LENGTH_LONG).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            @Override
+            public void onSnapshotReady(Bitmap snapshot) {
+                // TODO Auto-generated method stub
+                bitmap = snapshot;
+                try {
+                    int newHeight = 322;
+                    int newWidth = 315;
+
+                    int width = snapshot.getWidth();
+                    int height = snapshot.getHeight();
+
+                    float scaleWidth = ((float) newWidth) / width;
+                    float scaleHeight = ((float) newHeight) / height;
+
+                    Matrix matrix = new Matrix();
+
+                    matrix.postScale(scaleWidth, scaleHeight);
+
+                    Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 0, width, height, matrix, false);
+
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                    img = bos.toByteArray();
+
+                    date = new SimpleDateFormat("dd.MM.yyyy");
+                    String Date = date.format(new Date());
+                    Runs run = new Runs(0, timeText.getText().toString(), distanceText.getText().toString() + "KM", Date, String.format("%.02f", altitude), img);
+                    dbHandler.addRun(run);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+            }//end onSnapshotReady()
 
-            };
+        };
 
-            mMap.snapshot(callback);
-        }
+        mMap.snapshot(callback);
+
+    }//end updateDatabase()
 
 
 

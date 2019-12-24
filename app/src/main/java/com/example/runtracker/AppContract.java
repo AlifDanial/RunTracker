@@ -13,5 +13,5 @@ public class AppContract {
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_ELEVATION = "elevation";
     public static final String COLUMN_MAP = "map";
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
 }

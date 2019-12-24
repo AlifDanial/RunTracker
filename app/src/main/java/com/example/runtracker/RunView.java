@@ -26,6 +26,7 @@ public class RunView extends AppCompatActivity {
     private static byte[] MAP;
     private static float pace;
     DBHandler dbHandler;
+    Bitmap bitmap;
     TextView dateText;
     TextView distanceText;
     TextView timeText;
@@ -33,8 +34,8 @@ public class RunView extends AppCompatActivity {
     TextView paceText;
     TextView nameText;
     ImageView map;
-
     Button deleteBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class RunView extends AppCompatActivity {
         deleteBtn = findViewById(R.id.deletebtn);
         map = findViewById(R.id.mapView);
 
+
         // get recipe details from intent extras
         Intent intent = getIntent();
         ID = intent.getStringExtra("id");
@@ -66,7 +68,7 @@ public class RunView extends AppCompatActivity {
 
         ELEVATION = ELEVATION + "m";
 
-        String t=DURATION;
+        String t = DURATION;
         String[] h1=t.split(":");
 
         int hour=Integer.parseInt(h1[0]);
@@ -88,7 +90,9 @@ public class RunView extends AppCompatActivity {
             NAME = "Running Activity";
         }
 
-        Bitmap bitmap = BitmapFactory.decodeByteArray(MAP,0,MAP.length);
+        if(MAP != null){
+        bitmap = BitmapFactory.decodeByteArray(MAP,0,MAP.length);
+        }
 
         map.setImageBitmap(bitmap);
         dateText.setText(DATE);
@@ -98,9 +102,8 @@ public class RunView extends AppCompatActivity {
         paceText.setText(PACE);
         nameText.setText(NAME);
 
-
-
     }//end oncreate
+
 
     public void deleteRun(View view) {
         // delete current run

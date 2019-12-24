@@ -5,13 +5,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
 import android.content.ContentValues;
 import android.content.ContentResolver;
+import android.util.Log;
 
 import com.example.runtracker.provider.MyContentProvider;
 
 public class DBHandler extends SQLiteOpenHelper {
 
     private ContentResolver CR;
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "mapsDB.db";
     public static final String TABLE_RUN ="run";
     public static final String COLUMN_ID = "id";
@@ -35,7 +36,7 @@ public class DBHandler extends SQLiteOpenHelper {
                         "%s TEXT," +
                         "%s TEXT," +
                         "%s TEXT," +
-                        "%s VARBINARY)",
+                        "%s BLOB)",
                 TABLE_RUN,
                 COLUMN_ID,
                 COLUMN_DURATION,

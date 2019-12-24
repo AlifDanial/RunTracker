@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -43,6 +44,7 @@ public class RunHistoryActivity extends AppCompatActivity {
                 intent.putExtra("distance", run.getRunDistance());
                 intent.putExtra("date", run.getRunDate());
                 intent.putExtra("elevation", run.getRunElevation());
+                intent.putExtra("map", run.getRunMap());
                 startActivityForResult(intent, 1);
             }
         });

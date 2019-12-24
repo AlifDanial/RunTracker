@@ -10,7 +10,7 @@
         android:id="@+id/activityName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="48dp"
         android:layout_marginTop="60dp"
         android:fontFamily="@font/poppins_medium"
         android:text="Activity"
@@ -23,7 +23,7 @@
         android:id="@+id/dateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="48dp"
         android:fontFamily="@font/poppins_medium"
         android:text="on the 12.3.19"
         android:textSize="9sp"
@@ -34,8 +34,8 @@
         android:id="@+id/deletebtn"
         android:layout_width="55dp"
         android:layout_height="25dp"
-        android:layout_marginTop="69dp"
-        android:layout_marginEnd="56dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="52dp"
         android:background="@android:color/holo_red_dark"
         android:fontFamily="@font/poppins_medium"
         android:onClick="deleteRun"
@@ -53,7 +53,7 @@
         android:layout_marginTop="48dp"
         android:fontFamily="@font/poppins"
         android:text="Distance"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
@@ -65,7 +65,7 @@
         android:layout_marginTop="128dp"
         android:fontFamily="@font/poppins"
         android:text="Running Time"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
@@ -76,7 +76,7 @@
         android:layout_marginStart="104dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="0.11km"
-        android:textSize="15sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/elevationTextView"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +89,7 @@
         android:layout_marginStart="104dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="1:23:56"
-        android:textSize="15sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TimeTextView" />
 
@@ -98,11 +98,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="110dp"
-        android:layout_marginEnd="108dp"
+        android:layout_marginEnd="110dp"
         android:fontFamily="@font/poppins_semibold"
-        android:text="57.10"
-        android:textSize="15sp"
+        android:text="57.10m"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.763"
         app:layout_constraintStart_toEndOf="@+id/distanceTextView"
         app:layout_constraintTop_toBottomOf="@+id/elevationTextView" />
 
@@ -113,7 +114,7 @@
         android:layout_marginEnd="112dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="3.45"
-        android:textSize="15sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AvgPaceTextView" />
 
@@ -125,7 +126,7 @@
         android:layout_marginEnd="100dp"
         android:fontFamily="@font/poppins"
         android:text="Elevation"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
@@ -137,16 +138,16 @@
         android:layout_marginEnd="84dp"
         android:fontFamily="@font/poppins"
         android:text="Average Pace"
-        android:textSize="13sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView" />
 
 
     <ImageView
         android:id="@+id/mapView"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="56dp"
+        android:layout_width="315dp"
+        android:layout_height="322.5dp"
+        android:layout_marginStart="48dp"
         android:layout_marginTop="128dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
