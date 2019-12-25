@@ -43,8 +43,7 @@ public class RunView extends AppCompatActivity {
 
         getSupportActionBar().hide();
         // initialize global variables
-        dbHandler = new DBHandler(this, null, null,
-                AppContract.DATABASE_VERSION);
+        dbHandler = new DBHandler(this, null, null, AppContract.DATABASE_VERSION);
         dateText = findViewById(R.id.dateText);
         distanceText = findViewById(R.id.distanceText);
         timeText = findViewById(R.id.timeText);
@@ -63,9 +62,8 @@ public class RunView extends AppCompatActivity {
         DISTANCE = intent.getStringExtra("distance");
         DURATION = intent.getStringExtra("duration");
         ELEVATION = intent.getStringExtra("elevation");
-        MAP = intent.getByteArrayExtra("map");
-
         ELEVATION = ELEVATION + "m";
+        MAP = intent.getByteArrayExtra("map");
 
         String t = DURATION;
         String[] h1=t.split(":");

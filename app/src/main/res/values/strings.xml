@@ -3,8 +3,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="start_workout">Start workout</string>
     <string name="runtracker">RunTracker</string>
-    <string name="workout_history">Workout History</string>
-    <string name="weekly">Weekly</string>
+    <string name="workout_history">Last Workout</string>
+    <string name="weekly">History</string>
     <string name="monthly">Monthly</string>
 
     <string name="my_notification_title_template">My: %1$s</string>

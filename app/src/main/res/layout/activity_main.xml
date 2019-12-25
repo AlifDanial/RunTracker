@@ -15,7 +15,7 @@
         android:layout_marginTop="140dp"
         android:layout_marginEnd="48dp"
         android:background="@drawable/walker"
-        android:onClick="onRunHistoryButtonClicked"
+        android:onClick="lastRun"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,21 +24,11 @@
         style="@android:style/Widget.DeviceDefault.ImageButton"
         android:layout_width="150dp"
         android:layout_height="160dp"
+        android:layout_marginStart="48dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="15dp"
         android:background="@drawable/tree1"
-        app:layout_constraintEnd_toStartOf="@+id/monthlyBtn"
-        app:layout_constraintTop_toBottomOf="@+id/workoutHistoryBtn" />
-
-    <ImageButton
-        android:id="@+id/monthlyBtn"
-        style="@android:style/Widget.DeviceDefault.ImageButton"
-        android:layout_width="150dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="48dp"
-        android:background="@drawable/tree2"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:onClick="onRunHistoryButtonClicked"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/workoutHistoryBtn" />
 
     <Button
@@ -100,19 +90,5 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/weeklyBtn"
         app:layout_constraintTop_toTopOf="@+id/weeklyBtn" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="27dp"
-        android:layout_marginTop="128dp"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/poppins_bold"
-        android:strokeColor="#000000"
-        android:text="@string/monthly"
-        android:textColor="#FCFBF9"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/monthlyBtn"
-        app:layout_constraintTop_toTopOf="@+id/monthlyBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

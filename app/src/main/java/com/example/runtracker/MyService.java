@@ -16,16 +16,22 @@ public class MyService extends Service {
     MapsActivity mapsActivity;
     private final IBinder myBinder = new MyLocalBinder();
 
+
     //executes when startService is called and starts the service and foreground notification
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
             String content = mapsActivity.getState();
 
+            final Intent notificationIntent = new Intent(this, MapsActivity.class);
+            notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
+
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("RunTracker")
+                    .setContentTitle("New Activity")
                     .setContentText(content)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentIntent(pendingIntent)
                     .build();
             startForeground(1, notification);
 
@@ -43,7 +49,6 @@ public class MyService extends Service {
             return MyService.this;
         }
     }
-
 
     //method to stop the service
     @Override

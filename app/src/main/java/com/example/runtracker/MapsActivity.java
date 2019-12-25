@@ -4,9 +4,11 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -40,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -77,12 +80,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float distance = 0;
     private double altitude;
     private LatLng LastLatLng;
+    private LatLng latLng;
     private Polyline gpsTrack;
-    private int seconds = 0;
+    private int  seconds = 0;
     public static boolean startRun;
     private boolean serviceStatus = false;
     public static byte[] img;
     public float zoom;
+    BroadcastReceiver receiver;
 
 
     @Override
@@ -107,8 +112,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Timer();
         updateLocation();
+        configureReceiver();
 
     }//end onCreate
+
+    private void configureReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.example.runtracker");
+        filter.addAction("android.location.PROVIDERS_CHANGED");
+        receiver = new MyReceiver();
+        registerReceiver(receiver, filter);
+        updateLocation();
+    }
 
     //initialized to bind the activity and the service
     private ServiceConnection myConnection = new ServiceConnection()
@@ -214,6 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         newLocation.setLatitude(Lat);
                         newLocation.setLongitude(Long);
                         updateTrack();
+
                         Log.d("runTracker newLocation", location.getLatitude() + " " + location.getLongitude());
                         Log.d("runTracker newaltitude", location.getAltitude() + "");
                         Log.d("runTracker - newdistance", distance + "");
@@ -250,20 +266,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }//end onStartButtonClicked()
 
     public void onStopButtonClicked(View v){
-        locationManager.removeUpdates(activeLocationListener);
+        if(LastLatLng != null){
+            locationManager.removeUpdates(activeLocationListener);
+        }
+        if(latLng != null){
+            locationManager.removeUpdates(inactiveLocationListener);
+        }
         updateDatabase();
         Intent intent = new Intent(this, MyService.class);
         stopService(intent);
+        unregisterReceiver(receiver);
         startActivity(new Intent(this, MainActivity.class));
+
     }
 
     public void exit(){
-        startActivity(new Intent(this, MainActivity.class));
         if(serviceStatus == true){
             locationManager.removeUpdates(activeLocationListener);
             Intent intent = new Intent(this, MyService.class);
             stopService(intent);
         }
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private void updateTrack() {
@@ -292,8 +315,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void pauseTracking(){
         if(LastLatLng != null){
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, getZoom()));}
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, getZoom()));
         locationManager.removeUpdates(activeLocationListener);
+        }
         updateLocation();
     }
 
@@ -347,10 +371,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static String getState(){
         if(startRun == true){
-            return "Running is being tracked";
+            return "Activity is being tracked";
         }
         else{
-            return "Run tracking is paused";
+            return "Activity paused";
         }
     }
 
@@ -364,7 +388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         StartLat = location.getLatitude();
                         StartLong = location.getLongitude();
                         StartAlt = location.getAltitude();
-                        LatLng latLng = new LatLng(StartLat, StartLong);
+                        latLng = new LatLng(StartLat, StartLong);
                             LastLat = StartLat;
                             LastLong = StartLong;
                             LastAlt = StartAlt;
@@ -401,7 +425,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             StartLat = location.getLatitude();
                             StartLong = location.getLongitude();
                             StartAlt = location.getAltitude();
-                            LatLng latLng = new LatLng(StartLat, StartLong);
+                            latLng = new LatLng(StartLat, StartLong);
                                 LastLat = StartLat;
                                 LastLong = StartLong;
                                 LastAlt = StartAlt;
@@ -429,6 +453,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("runTracker", e.toString());
                 }
             }
+            else
+            Log.d("runTracker", "Location Disabled" );
     }//end updateLocation
 
 
@@ -486,6 +512,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        unregisterReceiver(receiver);
                         exit();
                     }
                 })
@@ -497,5 +524,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
+
 
 }
