@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -53,7 +54,7 @@ public class RunHistoryActivity extends AppCompatActivity {
 
         displayDBContents();
 
-    }//end oncreate
+    }//end onCreate
 
     private void displayDBContents() {
         String[] ArrayProjection = new String[] {
@@ -83,11 +84,12 @@ public class RunHistoryActivity extends AppCompatActivity {
                 );
                 data.add(run);
                 i++;
+                Log.d("index of run array list ", i +   "");
             }
 
         if(i == 0){
             new AlertDialog.Builder(RunHistoryActivity.this)
-                    .setTitle("No workouts saved yet")
+                    .setTitle("No workouts saved")
                     .setMessage("Would you like to go for a run?")
 
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -117,6 +119,7 @@ public class RunHistoryActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == 0 || requestCode == 1) {
                 displayDBContents(); // update list at every return to the activity
+                recreate();
             }
         }
     }

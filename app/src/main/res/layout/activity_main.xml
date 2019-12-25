@@ -87,7 +87,7 @@
         android:strokeColor="#000000"
         android:text="@string/weekly"
         android:textColor="#FCFBF9"
-        android:textSize="16sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/weeklyBtn"
         app:layout_constraintTop_toTopOf="@+id/weeklyBtn" />
 

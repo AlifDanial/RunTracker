@@ -122,7 +122,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filter.addAction("android.location.PROVIDERS_CHANGED");
         receiver = new MyReceiver();
         registerReceiver(receiver, filter);
-        updateLocation();
     }
 
     //initialized to bind the activity and the service
@@ -182,7 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onLocationChanged(Location location) {
                         Lat = location.getLatitude();
                         Long = location.getLongitude();
-
+                        Alt = location.getAltitude();
                         LastLatLng = new LatLng(Lat,Long);
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, 18.2f));
                         newLocation = new Location("newLocation");
@@ -223,6 +222,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Lat = location.getLatitude();
                         Long = location.getLongitude();
                         Alt = location.getAltitude();
+
                         LastLatLng = new LatLng(Lat,Long);
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, 18.2f));
                         newLocation = new Location("newLocation");
@@ -231,7 +231,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         updateTrack();
 
                         Log.d("runTracker newLocation", location.getLatitude() + " " + location.getLongitude());
-                        Log.d("runTracker newaltitude", location.getAltitude() + "");
+                        Log.d("runTracker ALT VALUE", Alt + "");
                         Log.d("runTracker - newdistance", distance + "");
                     }
 
@@ -266,12 +266,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }//end onStartButtonClicked()
 
     public void onStopButtonClicked(View v){
-        if(LastLatLng != null){
-            locationManager.removeUpdates(activeLocationListener);
-        }
-        if(latLng != null){
-            locationManager.removeUpdates(inactiveLocationListener);
-        }
+//        locationManager.removeUpdates(activeLocationListener);
+        locationManager.removeUpdates(inactiveLocationListener);
         updateDatabase();
         Intent intent = new Intent(this, MyService.class);
         stopService(intent);
@@ -297,10 +293,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Location oldLocation = new Location("oldLocation");
         oldLocation.setLatitude(LastLat);
         oldLocation.setLongitude(LastLong);
+
         distance += oldLocation.distanceTo(newLocation)/1000;
-        altitude = (Alt + LastAlt);
+
+        if(Alt > LastAlt){
+            altitude += (Alt - LastAlt);
+        }
+
         Log.d("runTracker - oldLocation", oldLocation.getLatitude() + "" + oldLocation.getLongitude());
-        Log.d("runTracker oldaltitude", LastAlt + "");
+        Log.d("runTracker LASTALT VALUE", LastAlt + "actual altitude:" + altitude );
         LastAlt = Alt;
         LastLat = Lat;
         LastLong = Long;
@@ -314,10 +315,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void pauseTracking(){
-        if(LastLatLng != null){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, getZoom()));
         locationManager.removeUpdates(activeLocationListener);
-        }
         updateLocation();
     }
 
@@ -430,7 +429,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 LastLong = StartLong;
                                 LastAlt = StartAlt;
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getZoom()));
-                            Log.d("zoom value", zoom + "");
                             runButton.setClickable(true);
                         }
 
@@ -453,8 +451,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("runTracker", e.toString());
                 }
             }
-            else
-            Log.d("runTracker", "Location Disabled" );
     }//end updateLocation
 
 

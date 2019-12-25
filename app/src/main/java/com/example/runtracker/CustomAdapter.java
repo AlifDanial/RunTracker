@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<Runs> {
@@ -48,6 +46,7 @@ public class CustomAdapter extends ArrayAdapter<Runs> {
         runDuration.setText(item.getRunDuration());
         runDistance.setText(item.getRunDistance());
 
+        //calculate the pace dynamically to determine activity was a walk or run
         DURATION = item.getRunDuration();
         DISTANCE = item.getRunDistance();
         String t = DURATION;
@@ -71,6 +70,7 @@ public class CustomAdapter extends ArrayAdapter<Runs> {
 
         runName.setText(NAME);
 
+        //return custom adapter list into runhistory class
         return customList;
     }
 

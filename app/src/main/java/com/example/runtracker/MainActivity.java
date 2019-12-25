@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,8 +22,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static List<Runs> data;
-    private int i = 0;
+    public static List<Runs> data;
+    public int i = 0;
     Button runButton;
     ImageButton runHistory;
 
@@ -39,7 +41,70 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        data = new ArrayList<Runs>();
+       runList();
+    }//end oncreate
+
+    public void onRunButtonClicked(View v){
+        startActivity(new Intent(this, MapsActivity.class));
+        runList();
+    }
+
+    public void onRunHistoryButtonClicked(View v){
+        runList();
+        if(i>0){
+            startActivity(new Intent(this, RunHistoryActivity.class));
+        }
+        else{
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("No workouts saved")
+                    .setMessage("Would you like to go for a run?")
+
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            LaunchMapsActivity();
+                        }
+                    })
+
+                    // A null listener allows the button to dismiss the dialog and take no further action.
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+        }
+
+
+    }
+
+    public void lastRun(View v){
+        runList();
+        if(i>0){
+        Runs run = data.get(0);
+        Intent intent = new Intent(getApplicationContext(), RunView.class);
+        intent.putExtra("id", Integer.toString(run.getRunID()));
+        intent.putExtra("duration", run.getRunDuration());
+        intent.putExtra("distance", run.getRunDistance());
+        intent.putExtra("date", run.getRunDate());
+        intent.putExtra("elevation", run.getRunElevation());
+        intent.putExtra("map", run.getRunMap());
+        startActivity(intent);
+        }
+
+        else{
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("No workouts saved")
+                    .setMessage("Would you like to go for a run?")
+
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            LaunchMapsActivity();
+                        }
+                    })
+
+                    // A null listener allows the button to dismiss the dialog and take no further action.
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+        }
+    }
+
+    public void runList(){
 
         String[] ArrayProjection = new String[] {
                 AppContract.COLUMN_ID,
@@ -54,7 +119,9 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = getContentResolver().query(MyContentProvider.CONTENT_URI, ArrayProjection,
                 null, null, null);
 
-        while (cursor.moveToNext()) {
+        data = new ArrayList<>();
+
+        if(cursor.moveToLast()) {
             Runs run = new Runs(
                     Integer.parseInt(cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_ID))),
                     cursor.getString(cursor.getColumnIndex(AppContract.COLUMN_DURATION)),
@@ -65,29 +132,13 @@ public class MainActivity extends AppCompatActivity {
             );
             data.add(run);
             i++;
-            Log.d("main", i +"");
+            Log.d("movedToLast",i+"");
         }
 
     }
 
-    public void onRunButtonClicked(View v){
+    public void LaunchMapsActivity(){
         startActivity(new Intent(this, MapsActivity.class));
-    }
-
-    public void onRunHistoryButtonClicked(View v){
-        startActivity(new Intent(this, RunHistoryActivity.class));
-    }
-
-    public void lastRun(View v){
-        Runs run = data.get(i-2);
-        Intent intent = new Intent(getApplicationContext(), RunView.class);
-        intent.putExtra("id", Integer.toString(run.getRunID()));
-        intent.putExtra("duration", run.getRunDuration());
-        intent.putExtra("distance", run.getRunDistance());
-        intent.putExtra("date", run.getRunDate());
-        intent.putExtra("elevation", run.getRunElevation());
-        intent.putExtra("map", run.getRunMap());
-        startActivityForResult(intent, 1);
     }
 
 

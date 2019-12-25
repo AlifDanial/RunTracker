@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
 import android.content.ContentValues;
 import android.content.ContentResolver;
-import android.util.Log;
 
 import com.example.runtracker.provider.MyContentProvider;
 
@@ -22,11 +21,12 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String COLUMN_ELEVATION = "elevation";
     public static final String COLUMN_MAP = "map";
 
-    public DBHandler(Context context, String name,
-                     SQLiteDatabase.CursorFactory factory, int version) {
+    public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
         CR = context.getContentResolver();
     }
+
+    //method to send sql statement to create table
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_RUN_TABLE = String.format(
@@ -48,6 +48,7 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_RUN_TABLE);
     }
 
+    //method to update database if new version of database is made
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RUN);
@@ -65,7 +66,7 @@ public class DBHandler extends SQLiteOpenHelper {
         CR.insert(MyContentProvider.CONTENT_URI, values);
     }
 
-    //method to delete recipe through content provider according to title
+    //method to delete recipe through content provider according to id
     public boolean deleteRun (String id) {
         boolean result = false;
         String selection = "id = \"" + id + "\"";
