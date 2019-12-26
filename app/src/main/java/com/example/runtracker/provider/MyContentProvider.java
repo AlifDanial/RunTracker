@@ -14,8 +14,8 @@ import android.text.TextUtils;
 
 public class MyContentProvider extends ContentProvider {
 
+    //initialization of variable and objects
     private DBHandler myDB;
-
     private static final String AUTHORITY = "com.example.runtracker.provider.MyContentProvider";
     private static final String RUN_TABLE = "run";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + RUN_TABLE);
@@ -32,8 +32,9 @@ public class MyContentProvider extends ContentProvider {
     public MyContentProvider() {
     }
 
+    //method to delete rows in database
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {  //method to delete rows and returns a count of deleted rows.
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
         int rowsDeleted = 0;
@@ -72,8 +73,9 @@ public class MyContentProvider extends ContentProvider {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    //method to insert new data into the database
     @Override
-    public Uri insert(Uri uri, ContentValues values) {  //method to insert new data into the provider database
+    public Uri insert(Uri uri, ContentValues values) {
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
         long id = 0;
@@ -91,13 +93,15 @@ public class MyContentProvider extends ContentProvider {
 
     }
 
+    //method for initialization of database handler object
     @Override
-    public boolean onCreate() { //method for initialization of database handler object
+    public boolean onCreate() {
         myDB = new DBHandler(getContext(), null, null, 4);
         return false;
     }
 
-    @Override   //method to identify the data to be retrieved, and extracted in a cursor object
+    //method to identify the data to be retrieved, and extracted in a cursor object
+    @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(DBHandler.TABLE_RUN);
@@ -120,8 +124,9 @@ public class MyContentProvider extends ContentProvider {
 
     }
 
+    //method to update the rows and return the number of rows updated
     @Override
-    public int update(Uri uri, ContentValues values, String selection, //method to update the rows and return the number of rows updated
+    public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
         int uriType = sURIMatcher.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();

@@ -22,6 +22,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    //initialization of variables
     public static List<Runs> data;
     public int i = 0;
     Button runButton;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         runButton = findViewById(R.id.runButton);
         runHistory = findViewById(R.id.workoutHistoryBtn);
 
+        //check location permission on app launch
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
@@ -44,17 +46,24 @@ public class MainActivity extends AppCompatActivity {
        runList();
     }//end oncreate
 
+    //method to open map activity
     public void onRunButtonClicked(View v){
         startActivity(new Intent(this, MapsActivity.class));
         runList();
     }
 
+    //method to open run history activity
     public void onRunHistoryButtonClicked(View v){
+        //refreches runList() to check if any runs are stored in database
         runList();
+
+        //if there are runs it will open runhistory activity
         if(i>0){
             startActivity(new Intent(this, RunHistoryActivity.class));
         }
+        //else it will prompt an alert dialog
         else{
+
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("No workouts saved")
                     .setMessage("Would you like to go for a run?")
@@ -73,8 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //method to open the Run View activity but the last workout saved
     public void lastRun(View v){
         runList();
+        //checks if there are any runs stored
         if(i>0){
         Runs run = data.get(0);
         Intent intent = new Intent(getApplicationContext(), RunView.class);
@@ -87,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         }
 
+        //if no run stored, alert dialog will prompt to start a new run
         else{
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("No workouts saved")
@@ -104,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //method to refresh the list of runs saved in database into List<> and saves the last run in data List<>
     public void runList(){
 
         String[] ArrayProjection = new String[] {
@@ -137,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //method to open maps activity if there are no runs saved in the database
     public void LaunchMapsActivity(){
         startActivity(new Intent(this, MapsActivity.class));
     }

@@ -13,15 +13,16 @@ import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<Runs> {
 
+    //initialization of widget variables
     List<Runs> runsList;
     TextView runDate;
     TextView runDuration;
     TextView runDistance;
     TextView runName;
-    float pace;
     String NAME;
     String DURATION;
     String DISTANCE;
+    float pace;
 
     //custom adapter constructor
     public CustomAdapter(Context context, List<Runs> runsList) {
@@ -93,6 +94,7 @@ public class CustomAdapter extends ArrayAdapter<Runs> {
     public void clear() {
         super.clear();
     }
+
 } // end of ContentAdapter.java
 
 

@@ -20,6 +20,7 @@ import java.util.List;
 
 public class RunHistoryActivity extends AppCompatActivity {
 
+    //initialization of objects and variables
     private static List<Runs> data;
     private static CustomAdapter adapter;
     private int i = 0;
@@ -32,11 +33,11 @@ public class RunHistoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_run_history);
         getSupportActionBar().hide();
 
+        //create a new DBHandler object
         dbHandler = new DBHandler(this,null,null, AppContract.DATABASE_VERSION);
         runsList = findViewById(R.id.runsList);
 
         //onclick listener for listview
-
         runsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -56,6 +57,7 @@ public class RunHistoryActivity extends AppCompatActivity {
 
     }//end onCreate
 
+    //method to load the database contents and display into a list view through a custom adapter
     private void displayDBContents() {
         String[] ArrayProjection = new String[] {
                 AppContract.COLUMN_ID,
@@ -87,6 +89,7 @@ public class RunHistoryActivity extends AppCompatActivity {
                 Log.d("index of run array list ", i +   "");
             }
 
+            //if there are no runs stored, prompt user to start new run in alert dialog
         if(i == 0){
             new AlertDialog.Builder(RunHistoryActivity.this)
                     .setTitle("No workouts saved")
@@ -113,21 +116,23 @@ public class RunHistoryActivity extends AppCompatActivity {
 
     }
 
-
+    // method to update list every time user returns to activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == 0 || requestCode == 1) {
-                displayDBContents(); // update list at every return to the activity
+                displayDBContents();
                 recreate();
             }
         }
     }
 
+    //method to launch maps activity
     public void LaunchMapsActivity(){
         startActivity(new Intent(this, MapsActivity.class));
     }
 
+    //method to launch main activity
     public void LaunchMainActivity(){
         startActivity(new Intent(this, MainActivity.class));
     }

@@ -1,15 +1,16 @@
 package com.example.runtracker;
-
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -20,14 +21,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,27 +43,21 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    //initialization of widgets objects and class objects
     MyService mapService;
+    DBHandler dbHandler;
     Button runButton;
     Button stopBtn;
     TextView distanceText;
     TextView timeText;
-    DBHandler dbHandler;
     SimpleDateFormat date;
-    Calendar cal = Calendar.getInstance();
-    boolean isBound = false;
-
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener inactiveLocationListener;
     private LocationListener activeLocationListener;
     private Location newLocation;
-    boolean clicked = false;
-    private long startTime;
-    private long stopTime;
 
-    private final long MIN_TIME = 1; //5 seconds
-    private final long MIN_DIST = 1; //5 meters
+    //initialization of variables
     private double StartLat;
     private double StartLong;
     private double Lat;
@@ -85,6 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int  seconds = 0;
     public static boolean startRun;
     private boolean serviceStatus = false;
+    private boolean isBound = false;
+    private boolean clicked = false;
     public static byte[] img;
     public float zoom;
     BroadcastReceiver receiver;
@@ -99,23 +91,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
+        //new DBHandler object
         dbHandler = new DBHandler(this,null,null, AppContract.DATABASE_VERSION);
 
         runButton = findViewById(R.id.runButton);
         timeText = findViewById(R.id.timeText);
-        runButton.setClickable(false);
         stopBtn = findViewById(R.id.stopBtn);
-        stopBtn.setVisibility(View.GONE);
 
+        //set stop button to invisible and make run button unclickable until location is found
+        stopBtn.setVisibility(View.GONE);
+        runButton.setClickable(false);
+
+        if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        //get location through location manager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        //start methods in oncreate
         Timer();
         updateLocation();
         configureReceiver();
 
     }//end onCreate
 
+    //register broadcast receiver to announce when there is a location disconnection when map activity is running
     private void configureReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.example.runtracker");
@@ -139,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-
+    //method to handle the google map object
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -148,6 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(true);
 
+        //polyline are used to draw the path when user runs
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions.color(Color.RED);
         polylineOptions.width(6);
@@ -155,28 +158,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    //onclick method when user taps the run button
     public void onStartButtonClicked(View v) {
 
-        //initialize class MyService
+        //initialize class MyService and start service during run
         Intent intent = new Intent(this, MyService.class);
         if(bindService(intent,myConnection,0)){
             startService(intent);
         }
 
+        //when clicked, the inactivelocationlistener is stopped and the activelovationlistener runs to record location
         if (clicked == false) {
             clicked = true;
+            startRun = true;
+            serviceStatus = true;
             locationManager.removeUpdates(inactiveLocationListener);
             runButton.setText("Pause");
             runButton.setBackground(getDrawable(R.drawable.button_rounded_gray));
             stopBtn.setVisibility(View.GONE);
-            startRun = true;
-            serviceStatus = true;
-            startTime = cal.getTimeInMillis();
 
 
-            //checks if network provider is enabled
+
+            //checks if network provider is enabled and acts as location listener with network provider
             if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-                try{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DIST, activeLocationListener = new LocationListener() {
+                try{locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 5, activeLocationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
                         Lat = location.getLatitude();
@@ -188,10 +193,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         newLocation.setLatitude(Lat);
                         newLocation.setLongitude(Long);
                         updateTrack();
-
-                        Log.d("runTracker newLocation", location.getLatitude() + " " + location.getLongitude());
-                        Log.d("runTracker newaltitude", location.getAltitude() + "");
-                        Log.d("runTracker - newdistance", distance + "");
                     }
 
                     @Override
@@ -214,9 +215,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
 
-            //checks if gps provider is enabled
+            //checks if gps provider is enabled and acts as location listener with gps provider
             else if(locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)){
-                try{locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DIST, activeLocationListener = new LocationListener() {
+                try{locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 5, activeLocationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
                         Lat = location.getLatitude();
@@ -254,6 +255,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("runTracker", e.toString());
                 }
             }
+
+            //when run button tapped again pause the tracking of the polyline and set the stop button to visible
         } else if (clicked) {
             pauseTracking();
             clicked = false;
@@ -265,8 +268,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }//end onStartButtonClicked()
 
+    //onclick method inactivelocationlistener, the service, update data into database and open main activity
     public void onStopButtonClicked(View v){
-//        locationManager.removeUpdates(activeLocationListener);
         locationManager.removeUpdates(inactiveLocationListener);
         updateDatabase();
         Intent intent = new Intent(this, MyService.class);
@@ -276,6 +279,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    //method to exit app when back button is pressed and stop service if user pressed start and redirects to main activity
     public void exit(){
         if(serviceStatus == true){
             locationManager.removeUpdates(activeLocationListener);
@@ -285,6 +289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(new Intent(this, MainActivity.class));
     }
 
+    //method to update the polyline path on the map, calculate the overall distance and altitude for elevation
     private void updateTrack() {
         List<LatLng> points = gpsTrack.getPoints();
         points.add(LastLatLng);
@@ -308,18 +313,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         updateDistance();
     }
 
+    //method to update the widget text view to display the distance
     public void updateDistance(){
         distanceText = findViewById(R.id.distanceText);
         String sText = String.format("%.02f", distance);
         distanceText.setText(sText);
     }
 
+    //method to pause when running and zooms out to see overall run
     public void pauseTracking(){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LastLatLng, getZoom()));
         locationManager.removeUpdates(activeLocationListener);
         updateLocation();
     }
 
+    //method to determine the zoom value
     public float getZoom(){
         if(distance < 1.0){
             zoom = 16.2f;
@@ -345,6 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return zoom;
     }
 
+    //method to calculate the time elapsed for the run
     private void Timer(){
         final Handler handler = new Handler();
         handler.post(new Runnable() {
@@ -368,6 +377,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    //method to update the State in the notification service whether the run is paused or being tracked
     public static String getState(){
         if(startRun == true){
             return "Activity is being tracked";
@@ -377,6 +387,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //method to locate user with inactivelocationlistener when user does not want to record run or when run is paused
     public void updateLocation(){
         //checks if network provider is enabled
         if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
@@ -453,7 +464,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
     }//end updateLocation
 
-
+    //method to capture a snapshot of the map and save all data into the database through Runs constructor and DBHandler add() method
     private void updateDatabase() {
 
         GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
@@ -499,6 +510,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }//end updateDatabase()
 
+    //method to prevent user from going back when run is being recorded or accidentally
     @Override
     public void onBackPressed() {
 
@@ -506,6 +518,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setTitle("End Session")
                 .setMessage("Would you like to exit workout?")
 
+                //if user clicks ok, run will not be saved, service is stopped and broadcast receiver is unregistered
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         unregisterReceiver(receiver);

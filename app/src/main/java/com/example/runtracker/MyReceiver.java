@@ -10,10 +10,7 @@ public class MyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-//        String message = "Broadcast intent detected " + intent.getAction();
-//
-//        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-
+        //When broadcast intent is received regarding location change, the broadcast receiver displays a Toast message
         if(intent.getAction().matches("android.location.PROVIDERS_CHANGED")){
             String message = "Broadcast intent detected " + "Location Providers Changed";
 

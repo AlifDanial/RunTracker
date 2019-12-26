@@ -13,6 +13,7 @@ import static com.example.runtracker.MyNotification.CHANNEL_ID;
 
 public class MyService extends Service {
 
+    //initialization of objects and variables
     MapsActivity mapsActivity;
     private final IBinder myBinder = new MyLocalBinder();
 
@@ -21,8 +22,10 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+            //gets the state of the run for the notification to show
             String content = mapsActivity.getState();
 
+            //notification launches maps activity when maps activity is running in foreground
             final Intent notificationIntent = new Intent(this, MapsActivity.class);
             notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             PendingIntent pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
